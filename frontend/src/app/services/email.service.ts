@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { EmailLog } from '../models/email-log.model';
 
-const BASE_URL = 'http://localhost:8080/api/email';
+const BASE_URL = 'https://autoemailsender-0cje.onrender.com/api/email';
 
 export interface SendEmailRequest {
   name?: string;
