@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Profile } from '../models/profile.model';
 
-const BASE_URL = 'http://localhost:8080/api/profile';
+const BASE_URL = 'https://autoemailsender-0cje.onrender.com/api/profile';
 
 @Injectable({ providedIn: 'root' })
 export class ProfileService {
