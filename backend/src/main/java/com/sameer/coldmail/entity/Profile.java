@@ -25,7 +25,7 @@ public class Profile {
 
     @JsonIgnore
     @Lob
-    @Column(name = "resume_data", columnDefinition = "LONGBLOB")
+    @Column(name = "resume_data", columnDefinition = "bytea")
     private byte[] resumeData;
 
     @Column(length = 500)
