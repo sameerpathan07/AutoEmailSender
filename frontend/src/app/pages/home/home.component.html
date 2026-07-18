@@ -1,0 +1,119 @@
+<div class="container">
+
+  <!-- Daily quota banner -->
+  <div class="card" *ngIf="quota" style="padding: 14px 24px;">
+    <strong>Daily quota:</strong> {{ quota.sentToday }} / {{ quota.dailyLimit }} sent today
+    &nbsp;•&nbsp;
+    <span [style.color]="quota.remaining === 0 ? '#991b1b' : '#166534'">
+      {{ quota.remaining }} remaining
+    </span>
+    <span *ngIf="quota.remaining === 0" style="color:#991b1b;">
+      — limit reached, sending will resume automatically tomorrow.
+    </span>
+  </div>
+
+  <!-- Single recruiter send form -->
+  <div class="card">
+    <h2>Send to a single recruiter</h2>
+    <p style="color:#616e7c; font-size:14px;">
+      Name is optional — if you don't have it, we'll address the email to "Hiring Manager".
+      Your resume (set on the Profile page) is attached automatically.
+    </p>
+
+    <label>Recruiter name (optional)</label>
+    <input type="text" [(ngModel)]="singleName" placeholder="e.g. Priya Sharma" />
+
+    <label>Recruiter email *</label>
+    <input type="email" [(ngModel)]="singleEmail" placeholder="e.g. priya&#64;company.com" />
+
+    <button (click)="sendSingleEmail()" [disabled]="!singleEmail || sending">
+      {{ sending ? 'Sending...' : 'Send Email' }}
+    </button>
+
+    <div class="status-msg status-success" *ngIf="sendResult?.status === 'SUCCESS'">
+      ✅ Email sent successfully!
+    </div>
+    <div class="status-msg status-error" *ngIf="sendResult?.status === 'FAILURE'">
+      ❌ Failed to send: {{ sendResult?.error }}
+    </div>
+    <div class="status-msg" style="background:#fef3c7; color:#92400e;" *ngIf="sendResult?.status === 'DUPLICATE'">
+      ⚠️ This recruiter was already contacted
+      <span *ngIf="sendResult?.lastSentAt"> on {{ sendResult?.lastSentAt | date:'medium' }}</span>
+      ({{ sendResult?.sentCountSoFar }} email(s) sent so far). Sending again may look spammy.
+      <br />
+      <button class="secondary" style="margin-top:8px;" (click)="confirmSendAnyway()" [disabled]="sending">
+        Send anyway
+      </button>
+    </div>
+    <div class="status-msg" style="background:#fee2e2; color:#991b1b;" *ngIf="sendResult?.status === 'LIMIT_REACHED'">
+      🚫 Daily send limit reached ({{ quota?.dailyLimit }} emails). Try again tomorrow — nothing was lost.
+    </div>
+  </div>
+
+  <!-- Bulk upload -->
+  <div class="card">
+    <h2>Bulk upload recruiters</h2>
+    <p style="color:#616e7c; font-size:14px;">
+      Upload an Excel file, or paste a list of names/emails — one per line.
+      Duplicates (already-added emails) are automatically skipped.
+    </p>
+
+    <label>Upload Excel (.xlsx / .xls)</label>
+    <input type="file" accept=".xlsx,.xls" (change)="onFileSelected($event)" />
+    <button (click)="uploadExcelFile()" [disabled]="!selectedFile || uploading">
+      {{ uploading ? 'Uploading...' : 'Upload Excel' }}
+    </button>
+
+    <label>Or paste text (one recruiter per line, e.g. "John Doe, john&#64;company.com")</label>
+    <textarea [(ngModel)]="pastedText" placeholder="John Doe, john&#64;company.com&#10;jane&#64;company.com&#10;Amit Verma - amit&#64;company.com"></textarea>
+    <button class="secondary" (click)="uploadPastedText()" [disabled]="!pastedText.trim() || uploading">
+      {{ uploading ? 'Uploading...' : 'Add From Text' }}
+    </button>
+
+    <div class="status-msg status-error" *ngIf="uploadError">{{ uploadError }}</div>
+
+    <div class="status-msg status-success" *ngIf="uploadResult">
+      ✅ Added {{ uploadResult.addedCount }} new recruiter(s).
+      <span *ngIf="uploadResult.duplicateCount > 0" style="display:block; margin-top:4px; color:#92400e;">
+        ⚠️ Skipped {{ uploadResult.duplicateCount }} duplicate(s) already in your list
+        (e.g. {{ uploadResult.duplicateEmails.slice(0, 3).join(', ') }}{{ uploadResult.duplicateEmails.length > 3 ? ', ...' : '' }}).
+      </span>
+    </div>
+  </div>
+
+  <!-- Recruiter queue / bulk send -->
+  <div class="card">
+    <h2>Recruiter queue ({{ recruiters.length }})</h2>
+
+    <button (click)="sendAllPending()" [disabled]="pendingCount === 0 || bulkSending || (quota?.remaining === 0)">
+      {{ bulkSending ? 'Sending...' : 'Send to all pending (' + pendingCount + ')' }}
+    </button>
+
+    <div class="status-msg status-success" *ngIf="bulkResult">
+      Sent {{ bulkResult.successCount }} / {{ bulkResult.totalAttempted }} successfully.
+      <span *ngIf="bulkResult.failureCount > 0">{{ bulkResult.failureCount }} failed.</span>
+      <span *ngIf="bulkResult.limitReached" style="display:block; margin-top:4px; color:#92400e;">
+        ⚠️ Daily limit reached — {{ bulkResult.remainingInQueue }} recruiter(s) remain in the queue and will
+        be sent automatically once the limit resets tomorrow.
+      </span>
+    </div>
+
+    <table *ngIf="recruiters.length">
+      <thead>
+        <tr><th>Name</th><th>Email</th><th>Status</th><th>Times contacted</th><th></th></tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let r of recruiters">
+          <td>{{ r.name || '—' }}</td>
+          <td>{{ r.email }}</td>
+          <td><span [class]="badgeClass(r.status)">{{ r.status }}</span></td>
+          <td>{{ r.sentCount }}</td>
+          <td><button class="secondary" (click)="removeRecruiter(r.id)">Remove</button></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p *ngIf="!recruiters.length" style="color:#9aa5b1;">No recruiters added yet.</p>
+  </div>
+
+</div>

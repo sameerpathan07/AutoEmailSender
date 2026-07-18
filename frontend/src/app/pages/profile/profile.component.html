@@ -1,0 +1,70 @@
+<div class="container">
+
+  <div class="card">
+    <h2>Your Resume</h2>
+    <p style="color:#616e7c; font-size:14px;" *ngIf="profile?.resumeFileName">
+      Current resume: <strong>{{ profile?.resumeFileName }}</strong>
+    </p>
+    <p style="color:#9aa5b1; font-size:14px;" *ngIf="!profile?.resumeFileName">
+      No resume uploaded yet.
+    </p>
+
+    <label>Upload / replace resume (PDF)</label>
+    <input type="file" accept=".pdf" (change)="onResumeSelected($event)" />
+    <button (click)="uploadResume()" [disabled]="!selectedResume || uploadingResume">
+      {{ uploadingResume ? 'Uploading...' : 'Upload Resume' }}
+    </button>
+  </div>
+
+  <div class="card">
+    <h2>Email Settings</h2>
+
+    <label>Your full name</label>
+    <input type="text" [(ngModel)]="fullName" placeholder="e.g. Sameer Iqbal Pathan" />
+
+    <label>Sender email (Gmail address configured on backend)</label>
+    <input type="email" [(ngModel)]="senderEmail" placeholder="e.g. your.email@gmail.com" />
+
+    <label>Default subject line</label>
+    <input type="text" [(ngModel)]="defaultSubject"
+           placeholder="e.g. Application for Java Full Stack Developer role" />
+
+    <label>Default email description / body</label>
+    <p style="color:#9aa5b1; font-size:12px; margin: 0 0 6px;">
+      Tip: use <code>{{ '{{name}}' }}</code> anywhere you want the recruiter's name auto-inserted.
+    </p>
+    <textarea [(ngModel)]="defaultDescription" rows="8"
+      placeholder="Hi {{ '{{name}}' }},&#10;&#10;I'm a Java Full Stack Developer with 2+ years of experience in Spring Boot, Angular and MySQL...&#10;&#10;Please find my resume attached. I'd love to connect regarding open opportunities.&#10;&#10;Best regards,&#10;Sameer"></textarea>
+
+    <button (click)="saveDetails()" [disabled]="saving">
+      {{ saving ? 'Saving...' : 'Save Profile' }}
+    </button>
+
+    <div class="status-msg status-success" *ngIf="message">{{ message }}</div>
+  </div>
+
+  <div class="card">
+    <h2>Follow-up Email (optional)</h2>
+    <p style="color:#616e7c; font-size:14px;">
+      If an HR was emailed once and hasn't been contacted again after a few days
+      (configured on the backend, default 4 days), this follow-up is sent automatically.
+      Leave blank to use an auto-generated "Following up: ..." message instead.
+    </p>
+    <p style="color:#9aa5b1; font-size:12px;">
+      Note: this can't detect whether they actually replied — it follows up on a timer only.
+    </p>
+
+    <label>Follow-up subject line</label>
+    <input type="text" [(ngModel)]="followUpSubject"
+           placeholder="e.g. Following up: Application for Java Full Stack Developer role" />
+
+    <label>Follow-up email body</label>
+    <textarea [(ngModel)]="followUpDescription" rows="6"
+      placeholder="Hi {{ '{{name}}' }},&#10;&#10;Just following up on my previous email — wanted to make sure it didn't get buried. My resume is attached again for convenience.&#10;&#10;Best regards,&#10;Sameer"></textarea>
+
+    <button (click)="saveDetails()" [disabled]="saving">
+      {{ saving ? 'Saving...' : 'Save Profile' }}
+    </button>
+  </div>
+
+</div>

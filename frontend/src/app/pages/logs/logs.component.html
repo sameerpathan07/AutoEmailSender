@@ -1,0 +1,26 @@
+<div class="container">
+  <div class="card">
+    <h2>Email History</h2>
+
+    <table *ngIf="logs.length">
+      <thead>
+        <tr><th>Recruiter</th><th>Email</th><th>Subject</th><th>Result</th><th>Sent At</th></tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let log of logs">
+          <td>{{ log.recruiterName || '—' }}</td>
+          <td>{{ log.recruiterEmail }}</td>
+          <td>{{ log.subject }}</td>
+          <td>
+            <span class="badge" [class.badge-sent]="log.result === 'SUCCESS'" [class.badge-failed]="log.result === 'FAILURE'">
+              {{ log.result }}
+            </span>
+          </td>
+          <td>{{ log.sentAt | date:'medium' }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p *ngIf="!logs.length" style="color:#9aa5b1;">No emails sent yet.</p>
+  </div>
+</div>
