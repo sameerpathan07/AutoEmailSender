@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 // Single-row table: your profile settings (resume + default email template).
 // A "singleton" profile is fine since this app is built for one user (you).
@@ -24,8 +26,8 @@ public class Profile {
     private String resumeContentType;
 
     @JsonIgnore
-    @Lob
-    @Column(name = "resume_data", columnDefinition = "bytea")
+    @JdbcTypeCode(SqlTypes.BINARY)
+    @Column(name = "resume_data")
     private byte[] resumeData;
 
     @Column(length = 500)
