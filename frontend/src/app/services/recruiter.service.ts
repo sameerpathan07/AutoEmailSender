@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Recruiter } from '../models/recruiter.model';
 
-const BASE_URL = 'http://localhost:8080/api/recruiters';
+const BASE_URL = 'https://autoemailsender-0cje.onrender.com/api/recruiters';
 
 export interface BulkSendResult {
   totalAttempted: number;
